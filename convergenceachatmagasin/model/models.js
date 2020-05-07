@@ -1,1 +1,46 @@
-sap.ui.define(["sap/ui/model/json/JSONModel","sap/ui/Device"],function(e,o){"use strict";return{createDeviceModel:function(){var t=new e(o);t.setDefaultBindingMode("OneWay");return t},createLocalModel:function(o,t,l){var i=typeof t==="undefined"?{}:t;o.setModel(new e(i),l)},listDocModel:function(e,o){this.createLocalModel(e,o,"listDocModel")},listModel:function(e,o){this.createLocalModel(e,o,"listModel")},imageModel:function(e,o){this.createLocalModel(e,o,"imageModel")},documentsModel:function(e,o){this.createLocalModel(e,o,"documentsModel")},listServirModel:function(e,o){this.createLocalModel(e,o,"listServirModel")},purchaseModel:function(e,o){this.createLocalModel(e,o,"purchaseModel")}}});
+sap.ui.define([
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/Device",
+], function (JSONModel, Device) {
+	"use strict";
+
+	return {
+
+		createDeviceModel: function () {
+			var oModel = new JSONModel(Device);
+			oModel.setDefaultBindingMode("OneWay");
+			return oModel;
+		},
+		
+		createLocalModel: function(oView, oData, sName) {
+			var oInitData = typeof oData === "undefined" ? {} : oData;
+			oView.setModel(new JSONModel(oInitData), sName);
+		},
+		
+		listDocModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "listDocModel");
+			
+		},
+		
+		listModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "listModel");
+		},
+		
+		imageModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "imageModel");
+		},
+		
+		documentsModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "documentsModel");
+		},
+		
+		listServirModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "listServirModel");
+		},
+		
+		purchaseModel: function(oView, oData){
+			this.createLocalModel(oView, oData, "purchaseModel");
+		}
+
+	};
+});
