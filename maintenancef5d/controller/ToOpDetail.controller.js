@@ -1,1 +1,249 @@
-sap.ui.define(["com/eramet/maintenanceF5D/controller/BaseController","com/eramet/maintenanceF5D/util/util","com/eramet/maintenanceF5D/util/formatter","sap/m/MessageBox","sap/m/upload/Uploader","sap/m/StandardListItem","sap/ui/core/Item","sap/m/library","sap/ui/model/json/JSONModel"],function(e,t,o,n,i,a,s,r,l){"use strict";return e.extend("com.eramet.depanneur.HATDepanneurApp.controller.ToOpDetail",{onInit:function(){this.getRouter().attachRoutePatternMatched(this._onRouteMatched,this)},_onRouteMatched:function(e){if(e.getParameter("name")==="ToOpDetail"){var o=this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailTitle");this.getView().byId("finalText").setText(t.oSelectedOT);this.getView().byId("finalText").setTooltip(t.oSelectedOT);this.treeModel(t.sOperationName);this.getView().byId("subOperations").setText(t.sOperationName.operation);this.getView().byId("toOpDetail").setTitle(o+" "+t.sOperationName.operation.split(" ")[2]);this.getView().byId("finalText2").setText(o+" "+t.sOperationName.operation.split(" ")[2]);this.getView().byId("finalText2").setTooltip(o+" "+t.sOperationName.operation.split(" ")[2]);this._resetContent()}},backToHome:function(){this._resetContent();this.getRouter().navTo("Home")},backToWorkPage:function(){this.getRouter().navTo("WorkPage")},backToFollowup:function(){this._resetContent();this.getRouter().navTo("Followup")},onPressOTDetail:function(){this._resetContent();this.getRouter().navTo("OTDetail")},backToOperations:function(){this._resetContent();this.getRouter().navTo("Operations")},onPressNavBack:function(){this._resetContent();this.getRouter().navTo("Operations")},onPressNavToOTDetail:function(){this.getRouter().navTo("OTDetail")},onPressAdd:function(e){sap.ui.getCore().byId(e.getSource().sId).setVisible(false);var t=this,o=this.getView().byId("list"),n=new sap.ui.layout.form.SimpleForm({columnsL:1,columnsM:1,editable:true,emptySpanL:4,emptySpanM:4,labelSpanL:3,labelSpanM:3,layout:"ResponsiveGridLayout",maxContainerCols:2}),i=new sap.m.CustomListItem({}),a=new sap.m.Label({text:this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailDate1")}),s=new sap.m.DateTimePicker({}),r=new sap.m.Label({text:this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailDate2")}),l=new sap.m.DateTimePicker({}),d=new sap.m.Label({text:this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailIntervenant")}),p=new sap.m.Input({});n.addContent(a);n.addContent(s);n.addContent(r);n.addContent(l);n.addContent(d);n.addContent(p);i.addContent(n);var u=new sap.m.Bar({contentRight:[new sap.m.Button({icon:"sap-icon://sys-minus",press:function(e){t.onPressRemove(e)}}),new sap.m.Button({icon:"sap-icon://sys-add",press:function(e){t.onPressAdd(e)}})]});i.addContent(u);o.addItem(i)},onPressRemove:function(e){var t=this.getView().byId("list");if(t.getItems().length!==1){if(e.getSource().oParent.oParent.sId===t.getItems()[t.getItems().length-1].sId){sap.ui.getCore().byId(t.getItems()[t.getItems().length-2].getContent()[1].getContentRight()[1].sId).setVisible(true)}t.removeItem(e.getSource().oParent.oParent.sId)}},_resetContent:function(){var e=this.getView().byId("additionalBox").getContent().length;if(e>6){for(var t=e-1;t>6;t--){this.getView().byId("additionalBox").removeContent(t)}}},onPressSave:function(){var e=this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailConfirmText"),t=this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailTitleText"),o=this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailFermer"),i=this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailSave");n.confirm(e,{title:t,actions:[i,o],onClose:function(e){}})},onPressArticle:function(){this.getRouter().navTo("Article")},onPressCamera:function(){function e(e){alert("success")}function t(e){alert("fail"+e)}navigator.camera.getPicture(e,t,{quality:50,destinationType:Camera.DestinationType.DATA_URL})},onPressFileBrowser:function(){var e=sap.ui.xmlfragment("com.eramet.depanneur.HATDepanneurApp.view.fragment.fileUpload",this);this.getView().addDependent(e);e.open();var t=sap.ui.require.toUrl("com/eramet/maintenanceF5D/model")+"/items.json",o=sap.ui.getCore().byId("UploadSet");this.getView().setModel(new l(t));o.getList().setMode(r.ListMode.MultiSelect);o.getDefaultFileUploader().setButtonOnly(false);o.getDefaultFileUploader().setIcon("sap-icon://attachment")},onItemAdded:function(e){var t=[],o=sap.ui.getCore(),n={fileName:e.getParameters().item.mProperties.fileName,mediaType:e.getParameters().item.mProperties.mediaType,uploadState:e.getParameters().item.mProperties.uploadState};t.push(n);for(var i=0;i<o.byId("UploadSet").mBindingInfos.items.binding.oList.length;i++){t.push(o.byId("UploadSet").mBindingInfos.items.binding.oList[i])}console.log("aItems: ",t);this.uploadedModel(t)},onUploadSelectedButton:function(){console.log("is it working?");var e=sap.ui.getCore().byId("UploadSet");console.log("uploadedModel:",this.getView().getModel("uploadedModel").getData());console.log("oUploadSet:",e);console.log("oUploadSet:",e._mListItemIdToItemMap);e.upload(e._oList.getItems())},onDownloadSelectedButton:function(){var e=sap.ui.getCore().byId("UploadSet");e.getItems().forEach(function(e){if(e.getListItem().getSelected()){e.download(true)}})},onPressClose:function(){var e=sap.ui.getCore();e.byId("uploadDialog").close();e.byId("uploadDialog").destroy()}})});
+sap.ui.define([
+	"com/eramet/maintenanceF5D/controller/BaseController",
+	"com/eramet/maintenanceF5D/util/util",
+	"com/eramet/maintenanceF5D/util/formatter",
+	"sap/m/MessageBox",
+	"sap/m/upload/Uploader",
+	"sap/m/StandardListItem",
+	"sap/ui/core/Item",
+	"sap/m/library",
+	"sap/ui/model/json/JSONModel"
+], function (BaseController, util, formatter, MessageBox, Uploader, StandardListItem, Item, MobileLibrary, JSONModel) {
+	"use strict";
+	
+	return BaseController.extend("com.eramet.depanneur.HATDepanneurApp.controller.ToOpDetail", {
+
+		onInit: function () {
+			this.getRouter().attachRoutePatternMatched(this._onRouteMatched, this);
+		},
+
+		_onRouteMatched: function (oEvent) {
+			if (oEvent.getParameter("name") === "ToOpDetail") {
+				var sText = this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailTitle");
+				this.getView().byId("finalText").setText(util.oSelectedOT);
+				this.getView().byId("finalText").setTooltip(util.oSelectedOT);
+				this.treeModel(util.sOperationName);
+				this.getView().byId("subOperations").setText(util.sOperationName.operation);
+				this.getView().byId("toOpDetail").setTitle(sText + " " + util.sOperationName.operation.split(" ")[2]);
+				this.getView().byId("finalText2").setText(sText + " " + util.sOperationName.operation.split(" ")[2]);
+				this.getView().byId("finalText2").setTooltip(sText + " " + util.sOperationName.operation.split(" ")[2]);
+				this._resetContent();
+			}
+		},
+		
+		backToHome: function () {
+			this._resetContent();	
+			this.getRouter().navTo("Home");
+		},
+		
+		backToWorkPage: function () {
+			this.getRouter().navTo("WorkPage");
+		},
+		
+		backToFollowup: function () {
+			this._resetContent();
+			this.getRouter().navTo("Followup");
+		},
+		
+		onPressOTDetail: function () {
+			this._resetContent();
+			this.getRouter().navTo("OTDetail");
+		},
+		
+		backToOperations : function () {
+			this._resetContent();
+			this.getRouter().navTo("Operations");
+		},
+		
+		onPressNavBack: function () {
+			this._resetContent();	
+			this.getRouter().navTo("Operations");
+		},
+		
+		onPressNavToOTDetail: function () {
+			this.getRouter().navTo("OTDetail");
+		},
+		
+		onPressAdd: function (oEvent) {
+			/*eslint-disable*/
+			sap.ui.getCore().byId(oEvent.getSource().sId).setVisible(false);
+			var that = this,
+				oList = this.getView().byId("list"),
+				oForm = new sap.ui.layout.form.SimpleForm({
+						columnsL: 1,
+						columnsM: 1,
+						editable: true,
+						emptySpanL: 4,
+						emptySpanM: 4,
+						labelSpanL: 3,
+						labelSpanM: 3,
+						layout: "ResponsiveGridLayout",
+						maxContainerCols: 2}),
+				oCustomList = new sap.m.CustomListItem({}),//this.getView().byId("customList"),
+				oLabel1 = new sap.m.Label({ text: this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailDate1")}),
+				oDate1 = new sap.m.DateTimePicker({}),
+				oLabel2 = new sap.m.Label({ text: this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailDate2")}),
+				oDate2 = new sap.m.DateTimePicker({}),
+				oLabel3 = new sap.m.Label({ text: this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailIntervenant")}),
+				oInput = new sap.m.Input({});
+			oForm.addContent(oLabel1);	
+			oForm.addContent(oDate1);
+			oForm.addContent(oLabel2);
+			oForm.addContent(oDate2);
+			oForm.addContent(oLabel3);
+			oForm.addContent(oInput);
+			oCustomList.addContent(oForm);
+			var oBar = new sap.m.Bar({
+				contentRight: [
+					new sap.m.Button({
+						icon:"sap-icon://sys-minus", 
+						press: function (oEvent) {
+							that.onPressRemove(oEvent);
+						}
+					}),
+					new sap.m.Button({
+						icon:"sap-icon://sys-add", 
+						press: function (oEvent) {
+							that.onPressAdd(oEvent);
+						}
+					})
+				]
+			});
+			oCustomList.addContent(oBar);
+			oList.addItem(oCustomList);
+		},
+		
+		onPressRemove: function (oEvent) {
+			var oList = this.getView().byId("list");
+			if(oList.getItems().length !== 1) {
+				if(oEvent.getSource().oParent.oParent.sId === oList.getItems()[oList.getItems().length-1].sId) {
+					sap.ui.getCore().byId(oList.getItems()[oList.getItems().length-2].getContent()[1].getContentRight()[1].sId).setVisible(true);
+				}
+				oList.removeItem(oEvent.getSource().oParent.oParent.sId);
+			}
+			/* eslint-enable */ 
+		},
+		
+		_resetContent: function () {
+			var iLength = this.getView().byId("additionalBox").getContent().length;
+			if(iLength > 6) {
+				for(var i = iLength - 1; i > 6; i--) {
+					this.getView().byId("additionalBox").removeContent(i);
+				}
+			}
+		},
+		
+		onPressSave: function () {
+			var sMessage = this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailConfirmText"),
+				sTitle = this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailTitleText"),
+				sButtonCancel = this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailFermer"),
+				sButtonSave = this.getView().getModel("i18n").getResourceBundle().getText("toOpDetailSave");
+			MessageBox.confirm(sMessage, {
+				title: sTitle,
+				actions: [sButtonSave, sButtonCancel],
+				onClose: function (oAction) {}
+			});
+		},
+		
+		onPressArticle: function () {
+			this.getRouter().navTo("Article");
+		},
+		
+		onPressCamera: function () {
+			/*eslint-disable*/
+			function onSuccess(imageData) { 
+	    		alert("success");
+			}
+			function onFail(message) { 
+	    		alert("fail" + message); 
+			}
+			navigator.camera.getPicture(onSuccess, onFail, {  
+	    		quality: 50, 
+	    		destinationType: Camera.DestinationType.DATA_URL 
+			}); 
+		   	/*eslint-enable*/
+		},
+		
+		onPressFileBrowser: function () {
+			var fileUpload = sap.ui.xmlfragment("com.eramet.depanneur.HATDepanneurApp.view.fragment.fileUpload", this);
+			this.getView().addDependent(fileUpload);
+			fileUpload.open();  
+			var sPath = sap.ui.require.toUrl("com/eramet/maintenanceF5D/model") + "/items.json",
+				oUploadSet = sap.ui.getCore().byId("UploadSet");
+			this.getView().setModel(new JSONModel(sPath));
+			oUploadSet.getList().setMode(MobileLibrary.ListMode.MultiSelect);
+
+			// Modify "add file" button
+			oUploadSet.getDefaultFileUploader().setButtonOnly(false);
+			oUploadSet.getDefaultFileUploader().setIcon("sap-icon://attachment");
+		},
+		
+		/**
+		 * Test function to create uploadedModel
+		 * */
+		onItemAdded: function (oEvent) {
+			/*eslint-disable*/
+			var aItems = [],
+				core = sap.ui.getCore(),
+				oElement = {
+					"fileName":	oEvent.getParameters().item.mProperties.fileName,
+					"mediaType": oEvent.getParameters().item.mProperties.mediaType,
+					"uploadState": oEvent.getParameters().item.mProperties.uploadState
+				};
+			aItems.push(oElement);
+			for(var i = 0; i < core.byId("UploadSet").mBindingInfos.items.binding.oList.length; i++) {
+				aItems.push(core.byId("UploadSet").mBindingInfos.items.binding.oList[i]);
+			}
+			console.log("aItems: ", aItems);
+			this.uploadedModel(aItems);
+		}, 
+		
+		onUploadSelectedButton: function () {
+			console.log("is it working?");
+			var oUploadSet = sap.ui.getCore().byId("UploadSet");
+			
+			console.log("uploadedModel:", this.getView().getModel("uploadedModel").getData());
+			
+			
+			console.log("oUploadSet:", oUploadSet);
+			console.log("oUploadSet:", oUploadSet._mListItemIdToItemMap);
+			
+			oUploadSet.upload(oUploadSet._oList.getItems());
+/*			for(var i = 0; i < this.getView().getModel("uploadedModel").getData().length; i++) {
+				console.log(i, ". file: ", this.getView().getModel("uploadedModel").getData()[i]);
+				
+				if (oUploadSet._oList.getItems()[i].getSelected()) {
+					console.log("selected!");
+					console.log("state: ", this.getView().getModel("uploadedModel").getData()[i].getUploadState());
+					oUploadSet.uploadItem(this.getView().getModel("uploadedModel").getData()[i]);
+					console.log("uploaded!");
+				}
+				
+			}*/
+
+/*			oUploadSet.getItems().forEach(function (oItem) {		//	original code //
+				if (oItem.getListItem().getSelected()) {			//	original code //
+					oUploadSet.uploadItem(oItem);					//	original code //
+				}													//	original code //
+			});														//	original code //	*/
+		},
+		
+		onDownloadSelectedButton: function () {
+			var oUploadSet = sap.ui.getCore().byId("UploadSet");
+
+			oUploadSet.getItems().forEach(function (oItem) {
+				if (oItem.getListItem().getSelected()) {
+					oItem.download(true);
+				}
+			});
+		},
+		
+		onPressClose: function () {
+			var core = sap.ui.getCore();
+			core.byId("uploadDialog").close();
+			core.byId("uploadDialog").destroy();
+		}
+		/*eslint-enable*/
+	});
+
+});

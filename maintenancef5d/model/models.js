@@ -1,1 +1,130 @@
-sap.ui.define(["sap/ui/model/json/JSONModel","sap/ui/Device"],function(e,o){"use strict";return{createDeviceModel:function(){var t=new e(o);t.setDefaultBindingMode("OneWay");return t},createLocalModel:function(o,t,l){var i=typeof t==="undefined"?{}:t;o.setModel(new e(i),l)},createHeaderModel:function(e,o){this.createLocalModel(e,o,"headerModel")},tilesModel:function(e,o){this.createLocalModel(e,o,"tilesModel")},menuTitleModel:function(e,o){this.createLocalModel(e,o,"menuTitleModel")},listModel:function(e,o){this.createLocalModel(e,o,"listModel")},treeModel:function(e,o){this.createLocalModel(e,o,"treeModel")},posteExecutantModel:function(e,o){this.createLocalModel(e,o,"posteExecutantModel")},equipmentVHModel:function(e,o){this.createLocalModel(e,o,"equipmentVHModel")},rondierModel:function(e,o){this.createLocalModel(e,o,"rondierModel")},filterLabelModel:function(e,o){this.createLocalModel(e,o,"filterLabelModel")},avisDetail:function(e,o){this.createLocalModel(e,o,"avisDetail")},followupListModel:function(e,o){this.createLocalModel(e,o,"followupListModel")},workCenterModel:function(e,o){this.createLocalModel(e,o,"workCenterModel")},infoEquipmentModel:function(e,o){this.createLocalModel(e,o,"infoEquipmentModel")},equipmentViewModel:function(e,o){this.createLocalModel(e,o,"equipmentViewModel")},avisRattachesModel:function(e,o){this.createLocalModel(e,o,"avisRattachesModel")},avisDetailModel:function(e,o){this.createLocalModel(e,o,"avisDetailModel")},infoStockModel:function(e,o){this.createLocalModel(e,o,"infoStockModel")},testModel1:function(e,o){this.createLocalModel(e,o,"testModel1")},testModel2:function(e,o){this.createLocalModel(e,o,"testModel2")},otViewModel:function(e,o){this.createLocalModel(e,o,"otViewModel")},otDetailModel:function(e,o){this.createLocalModel(e,o,"otDetailModel")},opViewModel:function(e,o){this.createLocalModel(e,o,"opViewModel")},opDetailModel:function(e,o){this.createLocalModel(e,o,"opDetailModel")},avisUploadedModel:function(e,o){this.createLocalModel(e,o,"avisUploadedModel")},uploadedModel:function(e,o){this.createLocalModel(e,o,"uploadedModel")},articleModel:function(e,o){this.createLocalModel(e,o,"articleModel")},documentModel:function(e,o){this.createLocalModel(e,o,"documentModel")}}});
+sap.ui.define([
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/Device"
+], function (JSONModel, Device) {
+	"use strict";
+
+	return {
+
+		createDeviceModel: function () {
+			var oModel = new JSONModel(Device);
+			oModel.setDefaultBindingMode("OneWay");
+			return oModel;
+		},
+		
+		createLocalModel: function(oView, oData, sName) {
+			var oInitData = typeof oData === "undefined" ? {} : oData;
+			oView.setModel(new JSONModel(oInitData), sName);
+		},
+		
+		createHeaderModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "headerModel");
+		},
+		
+		tilesModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "tilesModel");
+		},
+		
+		menuTitleModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "menuTitleModel");
+		},
+		
+		listModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "listModel");
+		},
+		
+		treeModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "treeModel");
+		},
+		
+		posteExecutantModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "posteExecutantModel");
+		},
+		
+		equipmentVHModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "equipmentVHModel");
+		},
+		
+		rondierModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "rondierModel");
+		},
+		
+		filterLabelModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "filterLabelModel");
+		},
+		
+		/** Data for the selected avis in AvisDetail.view */  
+		avisDetail: function(oView, oData) {
+			this.createLocalModel(oView, oData, "avisDetail");
+		},
+		
+		followupListModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "followupListModel");
+		},
+		
+		workCenterModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "workCenterModel");
+		},
+		
+		infoEquipmentModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "infoEquipmentModel");
+		},
+		
+		equipmentViewModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "equipmentViewModel");
+		},
+		
+		avisRattachesModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "avisRattachesModel");
+		},
+		
+		avisDetailModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "avisDetailModel");
+		},
+		
+		infoStockModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "infoStockModel");
+		},
+		
+		testModel1: function(oView, oData) {
+			this.createLocalModel(oView, oData, "testModel1");
+		},
+		
+		testModel2: function(oView, oData) {
+			this.createLocalModel(oView, oData, "testModel2");
+		},
+		
+		otViewModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "otViewModel");
+		},
+		
+		otDetailModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "otDetailModel");
+		},
+		
+		opViewModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "opViewModel");
+		},
+		
+		opDetailModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "opDetailModel");
+		},
+		
+		avisUploadedModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "avisUploadedModel");
+		},
+		
+		uploadedModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "uploadedModel");
+		},
+		
+		articleModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "articleModel");
+		},
+		
+		documentModel: function(oView, oData) {
+			this.createLocalModel(oView, oData, "documentModel");
+		}
+
+	};
+});

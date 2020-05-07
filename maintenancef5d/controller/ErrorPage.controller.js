@@ -1,1 +1,31 @@
-sap.ui.define(["com/eramet/maintenanceF5D/controller/BaseController","com/eramet/maintenanceF5D/util/util","com/eramet/maintenanceF5D/util/formatter"],function(e,t,n){"use strict";return e.extend("com.olit.depanneur.HATDepanneurApp.controller.ErrorPage",{onInit:function(){this.getRouter().attachRoutePatternMatched(this._onRouteMatched,this)},_onRouteMatched:function(e){if(e.getParameter("name")==="ErrorPage"){}},backToHome:function(){this.getRouter().navTo("Home")},onPressNavToDetail:function(e){t.sSelectedTile=e.getSource().sId;this.getRouter().navTo("Detail")}})});
+sap.ui.define([
+	"com/eramet/maintenanceF5D/controller/BaseController",
+	"com/eramet/maintenanceF5D/util/util",
+	"com/eramet/maintenanceF5D/util/formatter"
+], function (BaseController, util, formatter) {
+	"use strict";
+
+	return BaseController.extend("com.olit.depanneur.HATDepanneurApp.controller.ErrorPage", {
+		/*eslint-disable*/
+		onInit: function () {
+			this.getRouter().attachRoutePatternMatched(this._onRouteMatched, this);
+		},
+		
+		_onRouteMatched: function (oEvent) {
+			if (oEvent.getParameter("name") === "ErrorPage") {
+				
+			}
+		},
+		
+		backToHome: function () {
+			this.getRouter().navTo("Home");
+		},
+		
+		onPressNavToDetail: function (oEvent) {
+			util.sSelectedTile = oEvent.getSource().sId;
+			this.getRouter().navTo("Detail");
+		}
+		/*eslint-enable*/
+	});
+
+});

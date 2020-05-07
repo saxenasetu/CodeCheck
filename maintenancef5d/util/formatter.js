@@ -1,1 +1,249 @@
-jQuery.sap.declare("com.eramet.maintenanceF5D.util.formatter");com.eramet.maintenanceF5D.util.formatter={setEffect:function(e){if(e==="5"){return"Success"}else if(e==="3"){return"Warning"}else if(e==="2"){return"Error"}else{return"None"}},setPrioStatus:function(e){if(e==="3"){return"Success"}else if(e==="2"){return"Warning"}else if(e==="1"){return"Error"}else{return"None"}},setNumber:function(e){if(parseInt(e)>10){return"Success"}else if(parseInt(e)>=5&&parseInt(e)<=10){return"Warning"}else{return"Error"}},setVisibleModeC:function(e){bVisible=true;if(e==="R"){bVisible=false}if(e==="C"){bVisible=true}if(e==="E"){bVisible=false}return bVisible},setVisibleModeE:function(e){bVisible=true;if(e==="R"){bVisible=false}if(e==="C"){bVisible=false}if(e==="E"){bVisible=true}return bVisible},setVisibleModeR:function(e){bVisible=true;if(e==="R"){bVisible=true}if(e==="C"){bVisible=false}if(e==="E"){bVisible=false}return bVisible},setVisibleModeRE:function(e){bVisible=true;if(e==="R"){bVisible=true}if(e==="C"){bVisible=false}if(e==="E"){bVisible=true}return bVisible},setVisibleModeRC:function(e){console.log("sValue",e);bVisible=true;if(e==="R"){bVisible=true}if(e==="C"){bVisible=true}if(e==="E"){bVisible=false}return bVisible},setVisibleModeCE:function(e){console.log("sValue",e);bVisible=true;if(e==="R"){bVisible=false}if(e==="C"){bVisible=true}if(e==="E"){bVisible=true}return bVisible},setDisplayModeRC:function(e){bEditable=true;if(e==="R"){bEditable=false}if(e==="E"){bEditable=false}if(e==="C"){bEditable=true}return bEditable},setDisplayModeRCE:function(e){bEditable=true;if(e==="R"){bEditable=false}if(e==="C"){bEditable=true}if(e==="E"){bEditable=true}return bEditable},setEditButton:function(e){bVisible=true;if(e==="R"){bVisible=true}if(e==="C"){bVisible=false}return bVisible},setCreateButtons:function(e){bVisible=true;if(e==="C"){bVisible=true}else{bVisible=false}return bVisible},setTile1Visibility:function(e){var i=true;if(e==="R"){i=false}else{i=true}return i},setTile2Visibility:function(e){var i=true;if(e==="R"){i=false}else{i=true}return i},setTile3Visibility:function(e){var i=true;if(e==="T"||e==="D"||e===""){i=false}else{i=true}return i},setAvisVisibility:function(e){var i=false;if(!e){i=true}else{i=false}return i},avisDate:function(e){var i=new Date(e);return i.toLocaleDateString()},setPriorityVisibility:function(e){var i=false;if(e){if(e.length>0){i=true}}return i},setRemoveButton:function(e){var i=true;if(e){if(e.length>0){i=false}}return i},setOperationDetailButton:function(e){var i=false;if(e){if(e.length>0&&e==="ZMIN"){i=true}}return i}};
+jQuery.sap.declare("com.eramet.maintenanceF5D.util.formatter");
+com.eramet.maintenanceF5D.util.formatter = {
+	/*eslint-disable */
+	setEffect:  function (sStatus) {
+		if (sStatus === "5") {
+			return "Success";
+		} else if (sStatus === "3") {
+			return "Warning";
+		} else if (sStatus === "2"){
+			return "Error";
+		} else {
+			return "None";
+		}
+	},
+	
+	setPrioStatus: function (sStatus) {
+		if (sStatus === "3") {
+			return "Success";
+		} else if (sStatus === "2") {
+			return "Warning";
+		} else if (sStatus === "1"){
+			return "Error";
+		} else {
+			return "None";
+		}	
+	},
+	
+	setNumber: function (sValue) {
+		if (parseInt(sValue) > 10) {
+			return "Success";
+		} else if (parseInt(sValue) >= 5 && parseInt(sValue) <= 10) {
+			return "Warning";
+		} else {
+			return "Error";
+		}
+	},
+	
+	setVisibleModeC: function (sValue) {
+		bVisible = true;
+		if(sValue === "R") {
+			bVisible = false;
+		}
+		if(sValue === "C") {
+			bVisible = true;
+		}
+		if(sValue === "E") {
+			bVisible = false;
+		}
+		return bVisible;
+	},
+	
+	setVisibleModeE: function (sValue) {
+		bVisible = true;
+		if(sValue === "R") {
+			bVisible = false;
+		}
+		if(sValue === "C") {
+			bVisible = false;
+		}
+		if(sValue === "E") {
+			bVisible = true;
+		}
+		return bVisible;
+	},
+	
+	setVisibleModeR: function (sValue) {
+		bVisible = true;
+		if(sValue === "R") {
+			bVisible = true;
+		}
+		if(sValue === "C") {
+			bVisible = false;
+		}
+		if(sValue === "E") {
+			bVisible = false;
+		}
+		return bVisible;
+	},
+	
+	setVisibleModeRE: function (sValue) {
+		bVisible = true;
+		if(sValue === "R") {
+			bVisible = true;
+		}
+		if(sValue === "C") {
+			bVisible = false;
+		}
+		if(sValue === "E") {
+			bVisible = true;
+		}
+		return bVisible;
+	},
+	
+	setVisibleModeRC: function (sValue) {
+		console.log("sValue", sValue);
+		bVisible = true;
+		if(sValue === "R") {
+			bVisible = true;
+		}
+		if(sValue === "C") {
+			bVisible = true;
+		}
+		if(sValue === "E") {
+			bVisible = false;
+		}
+		return bVisible;
+	},
+	
+	setVisibleModeCE: function (sValue) {
+		console.log("sValue", sValue);
+		bVisible = true;
+		if(sValue === "R") {
+			bVisible = false;
+		}
+		if(sValue === "C") {
+			bVisible = true;
+		}
+		if(sValue === "E") {
+			bVisible = true;
+		}
+		return bVisible;
+	},
+	
+	setDisplayModeRC: function (sValue) {
+		bEditable = true;
+		if(sValue === "R") {
+			bEditable = false;
+		}
+		if(sValue === "E") {
+			bEditable = false;
+		}
+		if(sValue === "C") {
+			bEditable = true;
+		}
+		return bEditable;
+	},
+	
+	setDisplayModeRCE: function (sValue) {
+		bEditable = true;
+		if(sValue === "R") {
+			bEditable = false;
+		}
+		if(sValue === "C") {
+			bEditable = true;
+		}
+		if(sValue === "E") {
+			bEditable = true;
+		}
+		return bEditable;
+	},
+	
+	setEditButton: function (sValue) {
+		bVisible = true;
+		if(sValue === "R") {
+			bVisible = true;
+		}
+		if(sValue === "C") {
+			bVisible = false;
+		}
+		return bVisible;
+	},
+	
+	setCreateButtons: function (sValue) {
+		bVisible = true;
+		if(sValue === "C") {
+			bVisible = true;
+		} else {
+			bVisible = false;
+		}
+		return bVisible;
+	},
+	
+	setTile1Visibility: function (sValue) {
+		var bVisible = true;
+		if(sValue === "R") {
+			bVisible = false;
+		} else {
+			bVisible = true;
+		}
+		return bVisible;
+	},
+	
+	setTile2Visibility: function (sValue) {
+		var bVisible = true;
+		if(sValue === "R" ) {
+			bVisible = false;
+		} else {
+			bVisible = true;
+		}
+		return bVisible;
+	},
+	
+	setTile3Visibility: function (sValue) {
+		var bVisible = true;
+		if(sValue === "T" || sValue === "D" || sValue === "") {
+			bVisible = false;
+		} else {
+			bVisible = true;
+		}
+		return bVisible;
+	},
+	
+	setAvisVisibility: function (bInputVisibility) {
+		var bVisible = false;
+		if(!bInputVisibility) {
+			bVisible = true;
+		} else {
+			bVisible = false;
+		}
+		return bVisible; 
+	},
+	
+	avisDate: function (sValue) {
+		var dNew = new Date(sValue);
+		return dNew.toLocaleDateString();
+	},
+	
+	setPriorityVisibility: function (sValue) {
+		var bVisible = false;
+		if(sValue) {
+			if(sValue.length > 0) {
+				bVisible = true;
+			}
+		}
+		return bVisible;
+	},
+	
+	setRemoveButton: function (sValue) {
+		var bEditable = true;
+		if(sValue) {
+			if(sValue.length > 0) {
+				bEditable = false;
+			}
+		}
+		return bEditable;
+	},
+	
+	setOperationDetailButton: function (sValue) {
+		var bVisible = false;
+		if(sValue) {
+			if(sValue.length > 0 && sValue === "ZMIN") {
+				bVisible = true;
+			}
+		}
+		return bVisible;
+	}
+	
+	/*eslint-enable */
+};

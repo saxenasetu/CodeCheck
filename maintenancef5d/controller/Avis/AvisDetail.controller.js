@@ -1,1 +1,625 @@
-sap.ui.define(["com/eramet/maintenanceF5D/controller/BaseController","com/eramet/maintenanceF5D/util/util","com/eramet/maintenanceF5D/util/formatter","sap/m/MessageBox","sap/m/upload/Uploader","sap/m/StandardListItem","sap/ui/core/Item","sap/m/library","sap/ui/model/json/JSONModel"],function(e,t,i,a,s,o,n,r,l){"use strict";return e.extend("com.eramet.maintenanceF5D.controller.Avis.AvisDetail",{aDetailAvis:[],onInit:function(){this.getRouter().attachRoutePatternMatched(this._onRouteMatched,this)},_onRouteMatched:function(e){if(e.getParameter("name")==="AvisDetail"){if(t.aDetailAvis&&t.aDetailAvis.NotificationNumber){this.aDetailAvis=t.aDetailAvis;this._setDisplayModel("R");this._setAvisDModel();this.getView().byId("breadcrumbs").setCurrentLocationText(this.aDetailAvis.NotificationNumber);this.getView().byId("edit").setIcon("sap-icon://edit");t.sTitleText=this.aDetailAvis.NotificationNumber;this.getView().byId("commentNew").setValue("");this.setTitle()}else{this._setDisplayModel("C");var i=this.getView().getModel("i18n").getResourceBundle().getText("avisDetailTitle");this.getView().byId("breadcrumbs").setCurrentLocationText(i);this.avisDetail([]);this.getView().byId("commentNew").setValue("");t.sTitleText=i;this._fillEquipmentCombo()}}},onAfterRendering:function(){var e=this;if(this.getView().getModel("avisDetailModel")&&this.getView().getModel("avisDetailModel").getData()){var t=this.getView().getModel("avisDetailModel").getData().mode;console.log("avisDetailModel:",t)}window.addEventListener("online",function(t){if(e.getView().byId("repousser").getVisible()===true&&e.getView().byId("demarrer").getVisible()===true){e.getView().byId("repousser").setEnabled(true);e.getView().byId("demarrer").setEnabled(true)}},false);window.addEventListener("offline",function(t){if(e.getView().byId("repousser").getVisible()===true&&e.getView().byId("demarrer").getVisible()===true){var i=a;e.getView().byId("repousser").setEnabled(false);e.getView().byId("demarrer").setEnabled(false);i.error("Refuser l'avis and Démarrer l'OT functions are not available in offline mode!",{})}},false)},_setDisplayModel:function(e){var t={},i=[];t.mode=e;i.push(t);this.avisDetailModel(t)},onPressEdit:function(){if(this.getView().byId("edit").getIcon()==="sap-icon://edit"){this._setDisplayModel("E");this.getView().byId("edit").setIcon("sap-icon://save");this._fillExecutantCombo()}else{this.getView().byId("edit").setIcon("sap-icon://edit");this._setDisplayModel("R");this._updateAvis()}},onHandleSuggest:function(e){var t=this.getView().byId("equipmentSelect").getValue();var i=this;this.getView().byId("equipmentSelect").setFilterFunction(function(e,t){return t.getText().match(new RegExp(e,"i"))});var a,s,o,n;var r="TechnicalObjectLabel";a="$filter=substringof('"+t.toUpperCase()+"',"+r+")";s="C_TechnicalObjectLabelVH/";o=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["EAM_OBJPG_MAINTNOTIFICATION_SRV"].uri;n=new sap.ui.core.ListItem({text:"{path: 'equipmentVHModel>TechnicalObjectLabel'}",key:"{path: 'equipmentVHModel>TechnicalObjectLabel'}"});var l=new sap.ui.model.odata.ODataModel(o,true);l.read(s,null,[a],true,function(e){i.getView().getModel("equipmentVHModel").setData(e.results);i.getView().byId("equipmentSelect").bindAggregation("suggestionItems",{path:"equipmentVHModel>/",width:"200px",template:n})})},onDeleteKey:function(e){var t=this.getView();if(e.mParameters.id){t.byId("clientIdKey").setValue("")}},onSuggSelected:function(e){var t=this.getView(),i=t.getModel("equipmentVHModel").getData();if(i.length>0){for(var a=0;a<i.length;a++){if(e.getParameters().selectedItem.mProperties.key==i[a].TechnicalObjectLabel){t.byId("equipmentSelect").setSelectedKey(i[a].TechnicalObjectLabel);t.byId("equipmentSelect").setValue(i[a].TechnicalObjectLabel)}}}},onPressBarcode:function(){jQuery.sap.require("sap.ndc.BarcodeScanner");var e=this;sap.ndc.BarcodeScanner.scan(function(t){if(t.text){e.getView().byId("equipmentSelect").setValue(t.text)}},function(e){alert("Scanning failed: "+e)})},_fillExecutantCombo:function(){var e=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["EAM_OBJPG_MAINTNOTIFICATION_SRV"].uri,t=new sap.ui.model.odata.ODataModel(e,true),i=this;t.read("I_WrkCtrBySemanticKeyStdVH?$filter=Plant eq 'ZP11'",null,null,true,function(e){if(e){console.log("posteExecutantModel:",e.results);var t={key:"",text:""};e.results.unshift(t);i.posteExecutantModel(e.results);i.getView().byId("posteExecutantSelect").setSelectedKey("");console.log("combo:",i.getView().getModel("posteExecutantModel").getData())}else{alert("Empty I_WrkCtrBySemanticKeyStdVH!")}},function(){alert("I_WrkCtrBySemanticKeyStdVH service fail")})},_fillEquipmentCombo:function(){var e=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["EAM_OBJPG_MAINTNOTIFICATION_SRV"].uri,t=new sap.ui.model.odata.ODataModel(e,true),i=this;t.read("C_TechnicalObjectLabelVH",null,null,true,function(e){if(e){var t={key:"",text:""};e.results.unshift(t);i.equipmentVHModel(e.results)}else{alert("Empty C_TechnicalObjectLabelVH!")}},function(){alert("C_TechnicalObjectLabelVH service fail")})},_updateAvis:function(){var e=t.avisDetailOriginal;var i=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_NOTIF_SRV"].uri,s=new sap.ui.model.odata.v2.ODataModel(i),o=this,n={NotificationNumber:t.avisDetailOriginal.NotificationNumber,LocationWorkCenter:this.getView().byId("edit").getIcon()==="sap-icon://save"?this.aDetailAvis.LocationWorkCenter:this.getView().byId("posteExecutantSelect").getSelectedKey(),TextNew:this.getView().byId("commentNew").getValue()};s.update("/NotificationHeaderSet('"+this.aDetailAvis.NotificationNumber+"')",n,{method:"PUT",success:function(e){a.success("Successfully updated the notification",{styleClass:"sapUiSizeCompact"})}.bind(this),error:function(e){console.log(e);var t=""+JSON.stringify(e.responseText.split('"message"')[1].split('"value"')[1].split('"innererror"')[0]);t=t.split(":")[1].split("},")[0];var i=t.substring(2,t.length-2);a.error(i,{styleClass:"sapUiSizeCompact"})}});this._setAvisDModel();this.backToAvis()},backToHome:function(){this.getRouter().navTo("Home")},backToAvis:function(){this.getRouter().navTo("Detail")},onPressCreate:function(){var e=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_NOTIF_SRV"].uri,t=new sap.ui.model.odata.v2.ODataModel(e,true),i={TechObjNumber:this.getView().byId("equipmentSelect").getValue(),ShortText:this.getView().byId("description").getValue(),Breakdown:this.getView().byId("equipmentCheckbox").getSelected()};t.create("/NotificationHeaderSet",i,{success:function(e){a.success("Successfully saved",{styleClass:"sapUiSizeCompact"})},error:function(e){console.log(e);var t=""+JSON.stringify(e.responseText.split('"message"')[1].split('"value"')[1].split('"innererror"')[0]);t=t.split(":")[1].split("},")[0];var i=t.substring(2,t.length-2);a.error(i,{styleClass:"sapUiSizeCompact"})}});this.backToHome()},onPressDelete:function(){var e=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_NOTIF_SRV"].uri,i=new sap.ui.model.odata.v2.ODataModel(e,true),s=sap.ui.getCore().byId("deleteComment").getValue(),o=this,n={NotificationNumber:t.avisDetailOriginal.NotificationNumber,TextNew:s,UserStatusNew:"E0001"};i.update("/NotificationHeaderSet('"+this.aDetailAvis.NotificationNumber+"')",n,{success:function(e){var t=o;a.success("Successfully removed",{styleClass:"sapUiSizeCompact",actions:["OK"],onClose:function(e){if(e==="OK"){t.onPressClose();t.backToAvis()}}})},error:function(e){var t=""+JSON.stringify(e.responseText.split('"message"')[1].split('"value"')[1].split('"innererror"')[0]);t=t.split(":")[1].split("},")[0];var i=t.substring(2,t.length-2);var s=o;a.error(i,{styleClass:"sapUiSizeCompact",actions:["OK"],onClose:function(e){if(e==="OK"){s.onPressClose();s.backToAvis()}}})}})},onPressNavBack:function(){this.getRouter().navTo("Detail")},onPressRepousser:function(){var e=sap.ui.xmlfragment("com.eramet.maintenanceF5D.view.fragment.refusal",this);this.getView().addDependent(e);e.open()},onPressDemarrer:function(){if(this.aDetailAvis&&this.aDetailAvis.OrderNumber&&this.aDetailAvis.OrderNumber.length>0){t.aCreatedOT=this.aDetailAvis.OrderNumber;var e=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_ORDER_SRV"].uri,i=new sap.ui.model.odata.ODataModel(e,true),s=this;i.read("OrderHeaderSet?$expand=HeaderToOperations/OperationComponent,HeaderToOperations/MeausurementPoint",null,null,true,function(e){console.log("oData of OT:",e);if(e&&e.results&&e.results.length&&e.results.length>0){t.aOTElements=e.results;s.getRouter().navTo("Operations")}else{alert("Empty OrderHeaderSet odata!")}}.bind(this),function(e){var t=""+JSON.stringify(e.responseText.split('"message"')[1].split('"value"')[1].split('"innererror"')[0]);t=t.split(":")[1].split("},")[0];var i=t.substring(2,t.length-2);a.error(i,{styleClass:"sapUiSizeCompact"})}.bind(this))}else{var e=com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_ORDER_SRV"].uri,i=new sap.ui.model.odata.v2.ODataModel(e,true),o={NotificationNumber:this.aDetailAvis.NotificationNumber};i.create("/OrderHeaderSet",o,{success:function(e){console.log("oData success:",e);a.success("Successfully saved",{styleClass:"sapUiSizeCompact"})},error:function(e){console.log("oData fail:",e);var t=""+JSON.stringify(e.responseText.split('"message"')[1].split('"value"')[1].split('"innererror"')[0]);t=t.split(":")[1].split("},")[0];var i=t.substring(2,t.length-2);a.error(i,{styleClass:"sapUiSizeCompact"})}})}},onPressClose:function(){var e=sap.ui.getCore();e.byId("refusalDialog").close();e.byId("refusalDialog").destroy()},_setAvisDModel:function(){this.avisDetail(this.aDetailAvis);console.log("new model:",this.getView().getModel("avisDetail").getData())},_resetModel:function(){var e=[{title:"N° OT 0000001",text:"Tube qui fuit",date:"21/10/2019",equipement:"Trousse de réparation",status:"Faible",prio:"Prio 1",codePoste:"code poste technique 1",description:"Description courte 1",type:"Correctif"},{title:"N° OT 0000002",text:"Verre brisé",date:"18/10/2019",equipement:"Verre coupé à la taille",status:"Moyenne",prio:"Prio 3",codePoste:"code poste technique 2",description:"Description courte 2",type:"Préventif"},{title:"N° OT 0000003",text:"Plateau cassé",date:"17/10/2019",equipement:"Charpentier",status:"Majeure",prio:"Prio 3",codePoste:"code poste technique 3",description:"Description courte 3",type:"Correctif"},{title:"N° OT 0000004",text:"Pas de chauffage",date:"21/10/2019",equipement:"Mécanicien en chauffage",status:"Faible",prio:"Prio 2",codePoste:"code poste technique 4",description:"Description courte 4",type:"Préventif"},{title:"N° OT 0000005",text:"Casier cassé",date:"15/10/2019",equipement:"Serrurier",status:"Majeure",prio:"Prio 1",codePoste:"code poste technique 5",description:"Description courte 5",type:"Correctif"}];t.aOTElements=e;this.followupListModel(e)},onPressFileBrowser:function(){var e=sap.ui.xmlfragment("com.eramet.maintenanceF5D.view.fragment.avisUpload",this);this.getView().addDependent(e);e.open();var t=sap.ui.require.toUrl("com/eramet/maintenanceF5D/model")+"/items.json",i=sap.ui.getCore().byId("avisUploadSet");this.getView().setModel(new l(t));i.getList().setMode(r.ListMode.MultiSelect);i.getDefaultFileUploader().setButtonOnly(false);i.getDefaultFileUploader().setIcon("sap-icon://attachment")},onItemAdded:function(e){var t=[],i=sap.ui.getCore(),a={fileName:e.getParameters().item.mProperties.fileName,mediaType:e.getParameters().item.mProperties.mediaType,uploadState:e.getParameters().item.mProperties.uploadState};t.push(a);for(var s=0;s<i.byId("avisUploadSet").mBindingInfos.items.binding.oList.length;s++){t.push(i.byId("avisUploadSet").mBindingInfos.items.binding.oList[s])}console.log("aItems: ",t);this.avisUploadedModel(t)},onPressUpload:function(){var e=sap.ui.xmlfragment("com.eramet.maintenanceF5D.view.fragment.avisUpload",this);this.getView().addDependent(e);e.open();var t=sap.ui.require.toUrl("com/eramet/maintenanceF5D/model")+"/items.json",i=sap.ui.getCore().byId("avisUploadSet");this.getView().setModel(new l(t));i.getList().setMode(r.ListMode.MultiSelect);i.getDefaultFileUploader().setButtonOnly(false);i.getDefaultFileUploader().setIcon("sap-icon://attachment")},onUploadComplete:function(){var e=sap.ui.getCore().byId("avisUploadSet");var t=e.getModel().getData();t.items.unshift({documentId:jQuery.now().toString(),fileName:oEvent.getParameter("files")[0].fileName,mimeType:"",thumbnailUrl:"",url:"",attributes:[{title:"Uploaded By",text:"You",active:false},{title:"Uploaded On",text:new Date(jQuery.now()).toLocaleDateString(),active:false},{title:"File Size",text:"505000",active:false}],statuses:[{title:"",text:"",state:"None"}],markers:[{}],selected:false});this.getView().getModel("avisUploadedModel").refresh();setTimeout(function(){MessageToast.show("UploadComplete event triggered.")},4e3)},onUploadSelectedButton:function(){console.log("is it working?");var e=sap.ui.getCore().byId("avisUploadSet");e.upload(e._oList.getItems())},onDownloadSelectedButton:function(){var e=sap.ui.getCore().byId("avisUploadSet");e.getItems().forEach(function(e){if(e.getListItem().getSelected()){e.download(true)}})},onPressCloseAvisUploader:function(){var e=sap.ui.getCore();e.byId("avisUploadDialog").close();e.byId("avisUploadDialog").destroy()}})});
+sap.ui.define([
+	"com/eramet/maintenanceF5D/controller/BaseController",
+	"com/eramet/maintenanceF5D/util/util",
+	"com/eramet/maintenanceF5D/util/formatter",
+	"sap/m/MessageBox",
+	"sap/m/upload/Uploader",
+	"sap/m/StandardListItem",
+	"sap/ui/core/Item",
+	"sap/m/library",
+	"sap/ui/model/json/JSONModel"
+], function (BaseController, util, formatter, MessageBox, Uploader, StandardListItem, Item, MobileLibrary, JSONModel) {
+	"use strict"; 
+
+	return BaseController.extend("com.eramet.maintenanceF5D.controller.Avis.AvisDetail", {
+		aDetailAvis: [],
+		onInit: function () {
+			this.getRouter().attachRoutePatternMatched(this._onRouteMatched, this);
+		},
+
+		_onRouteMatched: function (oEvent) {
+			if (oEvent.getParameter("name") === "AvisDetail") {
+				if(util.aDetailAvis && util.aDetailAvis.NotificationNumber) {
+					this.aDetailAvis = util.aDetailAvis;
+					this._setDisplayModel("R");
+					this._setAvisDModel();
+					this.getView().byId("breadcrumbs").setCurrentLocationText(this.aDetailAvis.NotificationNumber);
+				//	this.getView().byId("avisDetail").setText(util.aDetailAvis.title);
+					this.getView().byId("edit").setIcon("sap-icon://edit");
+					util.sTitleText = this.aDetailAvis.NotificationNumber;
+					this.getView().byId("commentNew").setValue("");
+					this.setTitle();
+				} else {
+					this._setDisplayModel("C");
+					var sTile = this.getView().getModel("i18n").getResourceBundle().getText("avisDetailTitle");
+					this.getView().byId("breadcrumbs").setCurrentLocationText(sTile);
+				//	this.getView().byId("avisDetail").setText(sTile);
+					this.avisDetail([]);
+					this.getView().byId("commentNew").setValue("");
+					util.sTitleText = sTile;
+					this._fillEquipmentCombo();
+				}
+			}
+		},
+
+		onAfterRendering: function () {
+		//	this.getView().byId("equipmentSelect").getAggregation("_endIcon")[0].setSrc("sap-icon://bar-code");
+			var that = this;
+			if(this.getView().getModel("avisDetailModel") && this.getView().getModel("avisDetailModel").getData()) {
+				var avisDetailModel = this.getView().getModel("avisDetailModel").getData().mode;
+				console.log("avisDetailModel:", avisDetailModel);
+				
+			}
+			
+			window.addEventListener("online", function(e) {
+				if(that.getView().byId("repousser").getVisible() === true && that.getView().byId("demarrer").getVisible() === true) {
+					that.getView().byId("repousser").setEnabled(true);
+					that.getView().byId("demarrer").setEnabled(true);
+				}
+			}, false);
+			
+			
+			window.addEventListener("offline", function(e) {
+				if(that.getView().byId("repousser").getVisible() === true && that.getView().byId("demarrer").getVisible() === true) {
+					var mb = MessageBox;
+					that.getView().byId("repousser").setEnabled(false);
+					that.getView().byId("demarrer").setEnabled(false);
+					mb.error("Refuser l'avis and Démarrer l'OT functions are not available in offline mode!", {});	
+				}
+			}, false);
+		},
+		
+		_setDisplayModel: function (sValue) {
+			var oElement = {},
+			aObject = [];
+			oElement.mode = sValue;
+			aObject.push(oElement);
+			this.avisDetailModel(oElement);
+		},
+		
+		onPressEdit: function () {
+			if(this.getView().byId("edit").getIcon() === "sap-icon://edit") {
+				this._setDisplayModel("E");
+				this.getView().byId("edit").setIcon("sap-icon://save");
+				this._fillExecutantCombo();
+			} else {
+				this.getView().byId("edit").setIcon("sap-icon://edit");
+				this._setDisplayModel("R");
+				this._updateAvis();
+			}
+		},
+		
+		onHandleSuggest: function (oEvent) {
+			var sInput = this.getView().byId("equipmentSelect").getValue();
+			var that = this;
+			this.getView().byId("equipmentSelect").setFilterFunction(function (sTerm, oItem) {
+				return oItem.getText().match(new RegExp(sTerm, "i"));
+			});
+			var sQueryString, sEntitySet, sUrl, oItemTemplate;
+	
+			var sEntity = "TechnicalObjectLabel";
+			sQueryString = "$filter=substringof('" + sInput.toUpperCase() + "'," + sEntity + ")";
+			sEntitySet = "C_TechnicalObjectLabelVH/";
+			sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["EAM_OBJPG_MAINTNOTIFICATION_SRV"].uri;
+			oItemTemplate = new sap.ui.core.ListItem({
+				text: "{path: 'equipmentVHModel>TechnicalObjectLabel'}",
+				key: "{path: 'equipmentVHModel>TechnicalObjectLabel'}"
+			});
+				
+			var oModel = new sap.ui.model.odata.ODataModel(sUrl, true);
+			oModel.read(sEntitySet,
+				null, 
+				[sQueryString],
+				true,
+				function (oData) {
+					that.getView().getModel("equipmentVHModel").setData(oData.results);
+					that.getView().byId("equipmentSelect").bindAggregation("suggestionItems", {
+						path: "equipmentVHModel>/",
+						width: "200px",
+						template: oItemTemplate
+					});
+				}
+			);
+		},
+		
+		onDeleteKey: function (oEvent) {
+			var oView = this.getView();
+			if (oEvent.mParameters.id) {
+				oView.byId("clientIdKey").setValue("");
+			} 
+		},
+		
+		onSuggSelected: function (oEvent) {
+			var oView = this.getView(),
+				aData = oView.getModel("equipmentVHModel").getData();
+			if (aData.length > 0) {
+				for (var i = 0; i < aData.length; i++) {
+					if (oEvent.getParameters().selectedItem.mProperties.key == aData[i].TechnicalObjectLabel) {
+						oView.byId("equipmentSelect").setSelectedKey(aData[i].TechnicalObjectLabel);
+						oView.byId("equipmentSelect").setValue(aData[i].TechnicalObjectLabel);
+					}
+				}
+			}
+		},
+		
+		onPressBarcode: function () {
+			jQuery.sap.require("sap.ndc.BarcodeScanner");
+			var that = this;
+			sap.ndc.BarcodeScanner.scan(
+				function (mResult) {
+					if(mResult.text) {
+						that.getView().byId("equipmentSelect").setValue(mResult.text);
+					}
+				},
+				function (Error) {
+					alert("Scanning failed: " + Error);
+				}
+			);
+		},
+		
+		_fillExecutantCombo: function () {
+			var sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["EAM_OBJPG_MAINTNOTIFICATION_SRV"].uri,
+			oModel = new sap.ui.model.odata.ODataModel(sUrl, true),
+			that = this;
+			oModel.read("I_WrkCtrBySemanticKeyStdVH?$filter=Plant eq 'ZP11'",
+				null, null,
+				true,
+				function (oData) {
+					if(oData) {
+						console.log("posteExecutantModel:", oData.results);
+						var oEmptyElement = {
+							"key": "",
+							"text": ""
+						};
+						oData.results.unshift(oEmptyElement);
+						that.posteExecutantModel(oData.results);
+						that.getView().byId("posteExecutantSelect").setSelectedKey("");
+						console.log("combo:", that.getView().getModel("posteExecutantModel").getData());
+					} else {
+						alert("Empty I_WrkCtrBySemanticKeyStdVH!");
+					}
+				},
+				function () {
+					alert("I_WrkCtrBySemanticKeyStdVH service fail");
+				}
+			)
+		},
+		
+		_fillEquipmentCombo: function () {
+			var sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["EAM_OBJPG_MAINTNOTIFICATION_SRV"].uri,
+			oModel = new sap.ui.model.odata.ODataModel(sUrl, true),
+			that = this;
+			oModel.read("C_TechnicalObjectLabelVH",
+				null, null,
+				true,
+				function (oData) {
+					if(oData) {
+						var oEmptyElement = {
+							"key": "",
+							"text": ""
+						};
+						oData.results.unshift(oEmptyElement);
+						that.equipmentVHModel(oData.results);
+				//		that.getView().byId("equipmentSelect").setSelectedKey("");
+					} else {
+						alert("Empty C_TechnicalObjectLabelVH!");
+					}
+				},
+				function () {
+					alert("C_TechnicalObjectLabelVH service fail");
+				}
+			)
+		},
+		
+		_updateAvis: function () {
+			var aOriginal = util.avisDetailOriginal;
+			var sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_NOTIF_SRV"].uri,
+				oModel = new sap.ui.model.odata.v2.ODataModel(sUrl),
+				that = this,
+				oUpdatedNofification = {
+					"NotificationNumber":			util.avisDetailOriginal.NotificationNumber,
+					"LocationWorkCenter": 			this.getView().byId("edit").getIcon() === "sap-icon://save" ? this.aDetailAvis.LocationWorkCenter : this.getView().byId("posteExecutantSelect").getSelectedKey(),
+					"TextNew":						this.getView().byId("commentNew").getValue()		
+				};
+			oModel.update("/NotificationHeaderSet('" + this.aDetailAvis.NotificationNumber + "')", oUpdatedNofification, {
+				method: "PUT",
+				success: (function(oData) {
+    				MessageBox.success("Successfully updated the notification",
+						{
+							styleClass: "sapUiSizeCompact"
+						}
+					);
+       			}).bind(this),
+	       		error: (function(oData) {
+	       			console.log(oData);
+   					var sErrorText = "" + JSON.stringify(oData.responseText.split("\"message\"")[1].split("\"value\"")[1].split("\"innererror\"")[0]);
+    					sErrorText = sErrorText.split(":")[1].split("},")[0];
+    				var sFinalText = sErrorText.substring(2,sErrorText.length-2);
+    				MessageBox.error(sFinalText,
+						{
+							styleClass: "sapUiSizeCompact"
+						}
+					);	
+				})
+			});
+			this._setAvisDModel();
+			this.backToAvis();
+		},
+		
+		backToHome: function () {
+			this.getRouter().navTo("Home");
+		},
+		
+		backToAvis: function () {
+		//	this.getRouter().navTo("Avis");
+			this.getRouter().navTo("Detail");
+		},
+		
+		onPressCreate: function () {
+			var sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_NOTIF_SRV"].uri,
+				oModel = new sap.ui.model.odata.v2.ODataModel(sUrl, true),
+				oEntry = {
+					// "NotificationNumber": "",
+					// "RequiredEndDate": null,
+					// "Planplant": "",
+					 "TechObjNumber": this.getView().byId("equipmentSelect").getValue(),
+					 "ShortText": this.getView().byId("description").getValue(),
+					// "EamsTecObjTxt": "",
+					// "Priority": "",
+					 "Breakdown": this.getView().byId("equipmentCheckbox").getSelected()
+					// "LocationWorkCenter": "",
+					// "PriorityText": "",
+					// "NotificationDate": null,
+					// "ReportedBy": "",
+					// "ReportedByText": "",
+					// "MaintPlant": "",
+					// "Effect": ""
+				};
+			oModel.create("/NotificationHeaderSet", oEntry,
+				{
+					success: function (oData) {
+						MessageBox.success("Successfully saved",
+							{
+								styleClass: "sapUiSizeCompact"
+							}
+						);
+					},
+					error: function (oData) {
+						console.log(oData);
+	   					var sErrorText = "" + JSON.stringify(oData.responseText.split("\"message\"")[1].split("\"value\"")[1].split("\"innererror\"")[0]);
+	    					sErrorText = sErrorText.split(":")[1].split("},")[0];
+	    				var sFinalText = sErrorText.substring(2,sErrorText.length-2);
+	    				MessageBox.error(sFinalText,
+							{
+								styleClass: "sapUiSizeCompact"
+							}
+						);	
+					}
+				}
+			);
+			this.backToHome();
+		},
+		
+		onPressDelete: function () {
+			var sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_NOTIF_SRV"].uri,
+				oModel = new sap.ui.model.odata.v2.ODataModel(sUrl, true),
+				sComment = sap.ui.getCore().byId("deleteComment").getValue(),
+				that = this,
+				oUpdatedNofification = {
+					"NotificationNumber":			util.avisDetailOriginal.NotificationNumber,
+					"TextNew":						sComment,
+					"UserStatusNew":				"E0001"	
+				};
+			oModel.update("/NotificationHeaderSet('" + this.aDetailAvis.NotificationNumber + "')", oUpdatedNofification,
+				{
+					success: function (oData) {
+						var self = that;
+						MessageBox.success("Successfully removed",
+							{
+								styleClass: "sapUiSizeCompact",	
+								actions: ["OK"],
+								onClose: function (oAction) {
+									if(oAction === "OK") {
+										self.onPressClose();
+										self.backToAvis();
+									}
+								}
+							}
+						);
+					},
+					error: function (oData) {
+	   					var sErrorText = "" + JSON.stringify(oData.responseText.split("\"message\"")[1].split("\"value\"")[1].split("\"innererror\"")[0]);
+	    					sErrorText = sErrorText.split(":")[1].split("},")[0];
+	    				var sFinalText = sErrorText.substring(2,sErrorText.length-2);
+	    				var self = that;
+	    				MessageBox.error(sFinalText,
+							{
+								styleClass: "sapUiSizeCompact",
+								actions: ["OK"],
+								onClose: function (oAction) {
+									if(oAction === "OK") {
+										self.onPressClose();
+										self.backToAvis();
+									}
+								}
+							}
+						);	
+					}
+				}
+			);
+		},
+		
+		onPressNavBack: function () {
+			this.getRouter().navTo("Detail");
+		},
+		
+		onPressRepousser: function () {
+			var refusal = sap.ui.xmlfragment("com.eramet.maintenanceF5D.view.fragment.refusal", this);
+			this.getView().addDependent(refusal);
+			refusal.open();
+		},
+		
+		onPressDemarrer: function () {
+			if(this.aDetailAvis && this.aDetailAvis.OrderNumber && this.aDetailAvis.OrderNumber.length > 0) {
+				util.aCreatedOT = this.aDetailAvis.OrderNumber;
+				var sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_ORDER_SRV"].uri,
+					oModel = new sap.ui.model.odata.ODataModel(sUrl, true),
+					that = this;
+				oModel.read("OrderHeaderSet?$expand=HeaderToOperations/OperationComponent,HeaderToOperations/MeausurementPoint",
+					null, null,
+					true,
+					function (oData) {
+						console.log("oData of OT:", oData);
+						if(oData && oData.results && oData.results.length && oData.results.length > 0) {
+							util.aOTElements = oData.results;
+							that.getRouter().navTo("Operations");
+						} else {
+							alert("Empty OrderHeaderSet odata!");
+						}
+					}.bind(this),
+					function (oData) {
+	   					var sErrorText = "" + JSON.stringify(oData.responseText.split("\"message\"")[1].split("\"value\"")[1].split("\"innererror\"")[0]);
+	    					sErrorText = sErrorText.split(":")[1].split("},")[0];
+	    				var sFinalText = sErrorText.substring(2,sErrorText.length-2);
+	    				MessageBox.error(sFinalText,
+							{
+								styleClass: "sapUiSizeCompact"
+							}
+						);	
+					}.bind(this)
+				);
+				
+			//	var sId = this.getView().byId("avisDetail").getText().split("avis ")[1],
+	/*			var sId = util.aDetailAvis.title.split("avis ")[1],
+					followupListModel = this.getModel("followupListModel").getData();
+				util.oSelectedOT = followupListModel[sId-1] && followupListModel[sId-1].title ? followupListModel[sId-1].title.split("N° ")[1] : "OT 0000001";
+				util.oSelectedOTFull = followupListModel[sId-1];
+				console.log("oSelectedOT: ", util.oSelectedOT);			*/
+				
+			} else {
+			//	this._resetModel();
+				var sUrl = com.eramet.maintenanceF5D.Component.getMetadata().getManifestEntry("sap.app").dataSources["ZUI5_GW_PM_ORDER_SRV"].uri,
+					oModel = new sap.ui.model.odata.v2.ODataModel(sUrl, true),
+					oEntry = {
+						"NotificationNumber": this.aDetailAvis.NotificationNumber
+					};
+				oModel.create("/OrderHeaderSet", oEntry,
+					{
+						success: function (oData) {
+							console.log("oData success:", oData);
+							MessageBox.success("Successfully saved",
+								{
+									styleClass: "sapUiSizeCompact"
+								}
+							);
+						},
+						error: function (oData) {
+							console.log("oData fail:", oData);
+		   					var sErrorText = "" + JSON.stringify(oData.responseText.split("\"message\"")[1].split("\"value\"")[1].split("\"innererror\"")[0]);
+		    					sErrorText = sErrorText.split(":")[1].split("},")[0];
+		    				var sFinalText = sErrorText.substring(2,sErrorText.length-2);
+		    				MessageBox.error(sFinalText,
+								{
+									styleClass: "sapUiSizeCompact"
+								}
+							);	
+						}
+					}
+				);				
+			}
+		},
+		
+		onPressClose: function () {
+			var core = sap.ui.getCore();
+			core.byId("refusalDialog").close();
+			core.byId("refusalDialog").destroy();
+		},
+		
+		_setAvisDModel: function () {
+			this.avisDetail(this.aDetailAvis);
+			console.log("new model:", this.getView().getModel("avisDetail").getData());
+		},
+		
+		_resetModel: function () {
+			var aElements = [
+				{
+					"title": "N° OT 0000001",
+			    	"text": "Tube qui fuit",
+			    	"date": "21/10/2019",
+			    	"equipement": "Trousse de réparation",
+			    	"status": "Faible",
+			    	"prio":	"Prio 1",
+			    	"codePoste": "code poste technique 1",
+			    	"description": "Description courte 1",
+			    	"type": "Correctif"
+				},
+				{
+					"title": "N° OT 0000002",
+					"text": "Verre brisé",
+					"date": "18/10/2019",
+					"equipement": "Verre coupé à la taille",
+					"status": "Moyenne",
+			    	"prio":	"Prio 3",
+			    	"codePoste": "code poste technique 2",
+			    	"description": "Description courte 2",
+			    	"type": "Préventif"
+				},
+				{
+					"title": "N° OT 0000003",
+					"text": "Plateau cassé",
+			    	"date": "17/10/2019",
+			    	"equipement": "Charpentier",
+		    		"status": "Majeure",
+			    	"prio":	"Prio 3",
+			    	"codePoste": "code poste technique 3",
+			    	"description": "Description courte 3",
+			    	"type": "Correctif"
+				},
+				{
+					"title": "N° OT 0000004",
+					"text": "Pas de chauffage",
+			    	"date": "21/10/2019",
+			    	"equipement": "Mécanicien en chauffage",
+			    	"status": "Faible",
+			    	"prio":	"Prio 2",
+			    	"codePoste": "code poste technique 4",
+			    	"description": "Description courte 4",
+			    	"type": "Préventif"
+				},
+				{
+					"title": "N° OT 0000005",
+			    	"text": "Casier cassé",
+			    	"date": "15/10/2019",
+			    	"equipement": "Serrurier",
+		    		"status": "Majeure",
+			    	"prio":	"Prio 1",
+			    	"codePoste": "code poste technique 5",
+			    	"description": "Description courte 5",
+			    	"type": "Correctif"
+				}
+			];
+			util.aOTElements = aElements;
+			this.followupListModel(aElements);
+		},
+		
+		onPressFileBrowser: function () {
+			var avisUpload = sap.ui.xmlfragment("com.eramet.maintenanceF5D.view.fragment.avisUpload", this);
+			this.getView().addDependent(avisUpload);
+			avisUpload.open();  
+			var sPath = sap.ui.require.toUrl("com/eramet/maintenanceF5D/model") + "/items.json",
+				oUploadSet = sap.ui.getCore().byId("avisUploadSet");
+			this.getView().setModel(new JSONModel(sPath));
+			oUploadSet.getList().setMode(MobileLibrary.ListMode.MultiSelect);
+
+			// Modify "add file" button
+			oUploadSet.getDefaultFileUploader().setButtonOnly(false);
+			oUploadSet.getDefaultFileUploader().setIcon("sap-icon://attachment");
+		},
+		
+		/**
+		 * Test function to create avisUploadedModel
+		 * */
+		onItemAdded: function (oEvent) {
+			/*eslint-disable*/
+			var aItems = [],
+				core = sap.ui.getCore(),
+				oElement = {
+					"fileName":	oEvent.getParameters().item.mProperties.fileName,
+					"mediaType": oEvent.getParameters().item.mProperties.mediaType,
+					"uploadState": oEvent.getParameters().item.mProperties.uploadState
+				};
+			aItems.push(oElement);
+			for(var i = 0; i < core.byId("avisUploadSet").mBindingInfos.items.binding.oList.length; i++) {
+				aItems.push(core.byId("avisUploadSet").mBindingInfos.items.binding.oList[i]);
+			}
+			console.log("aItems: ", aItems);
+			this.avisUploadedModel(aItems);
+		}, 
+		
+		onPressUpload: function () {
+			var fileUpload = sap.ui.xmlfragment("com.eramet.maintenanceF5D.view.fragment.avisUpload", this);
+			this.getView().addDependent(fileUpload);
+			fileUpload.open();  
+			var sPath = sap.ui.require.toUrl("com/eramet/maintenanceF5D/model") + "/items.json",
+				oUploadSet = sap.ui.getCore().byId("avisUploadSet");
+			this.getView().setModel(new JSONModel(sPath));
+			oUploadSet.getList().setMode(MobileLibrary.ListMode.MultiSelect);
+
+			// Modify "add file" button
+			oUploadSet.getDefaultFileUploader().setButtonOnly(false);
+			oUploadSet.getDefaultFileUploader().setIcon("sap-icon://attachment");
+		},
+		
+		onUploadComplete: function () {
+			var oUploadCollection = sap.ui.getCore().byId("avisUploadSet");
+			var oData = oUploadCollection.getModel().getData();
+
+			oData.items.unshift({
+				"documentId": jQuery.now().toString(), // generate Id,
+				"fileName": oEvent.getParameter("files")[0].fileName,
+				"mimeType": "",
+				"thumbnailUrl": "",
+				"url": "",
+				"attributes": [
+					{
+						"title": "Uploaded By",
+						"text": "You",
+						"active": false
+					},
+					{
+						"title": "Uploaded On",
+						"text": new Date(jQuery.now()).toLocaleDateString(),
+						"active": false
+					},
+					{
+						"title": "File Size",
+						"text": "505000",
+						"active": false
+					}
+				],
+				"statuses": [
+					{
+						"title": "",
+						"text": "",
+						"state": "None"
+					}
+				],
+				"markers": [
+					{
+					}
+				],
+				"selected": false
+			});
+			this.getView().getModel("avisUploadedModel").refresh();
+
+			// delay the success message for to notice onChange message
+			setTimeout(function() {
+				MessageToast.show("UploadComplete event triggered.");
+			}, 4000);
+		},
+		
+		onUploadSelectedButton: function () {
+			console.log("is it working?");
+			var oUploadSet = sap.ui.getCore().byId("avisUploadSet");
+			oUploadSet.upload(oUploadSet._oList.getItems());
+		},
+		
+		onDownloadSelectedButton: function () {
+			var oUploadSet = sap.ui.getCore().byId("avisUploadSet");
+
+			oUploadSet.getItems().forEach(function (oItem) {
+				if (oItem.getListItem().getSelected()) {
+					oItem.download(true);
+				}
+			});
+		},
+		
+		onPressCloseAvisUploader: function () {
+			var core = sap.ui.getCore();
+			core.byId("avisUploadDialog").close();
+			core.byId("avisUploadDialog").destroy();
+		}
+		
+	});
+
+});
